@@ -2,9 +2,14 @@ import 'package:collection/collection.dart';
 import 'package:zadart/src/functions/function_utils.dart';
 import 'package:zadart/src/nullable/nullable_extensions.dart';
 
-const deepCollectionEquals = DeepCollectionEquality();
+const _dce = DeepCollectionEquality();
 
+// extensions on lists
 extension ZadartListExtensions<E> on List<E> {
+  /// Returns a new list consisting of the unique elements in this list, in first-encounter order
+  /// The [by] parameter can be used to provide a function to determine what to examine when determining
+  /// uniqueness, otherwise standard equality is used.
+  /// By default, this will return a new list, but [mutate] can be used change the list in place instead
   List<E> unique<By>({ By Function(E)? by, bool mutate = false }) {
     final uniqs = <By>{};
     final list = mutate ? this : [ ...this ];
@@ -19,10 +24,10 @@ extension ZadartDeepEqualityExtensions on DeepCollectionEquality {
 
 extension ZadartMapExtensions<K, V> on Map<K, V> {
   bool deepEquals(Object? other) =>
-      deepCollectionEquals.equals(this, other);
+      _dce.equals(this, other);
 
   bool deepUnequal(Object? other) =>
-      deepCollectionEquals.unequal(this, other);
+      _dce.unequal(this, other);
 
   Map<K, V2> mapValues<V2>(V2 Function(V) mapper) =>
       mapValuesWithKey((_, v) => mapper(v));
@@ -103,8 +108,21 @@ extension ZadartIterableExtensions<E> on Iterable<E> {
       });
 
   bool deepEquals(Object? other) =>
-      deepCollectionEquals.equals(this, other);
+      _dce.equals(this, other);
 
   bool deepUnequal(Object? other) =>
-      deepCollectionEquals.unequal(this, other);
+      _dce.unequal(this, other);
+
+  Iterable<E> unique<By>({ By Function(E)? by, bool mutate = false }) =>
+      by.inverse(this).filter((s) => s is Set) ?? _uniq(this, by: by, mutate: mutate);
+}
+
+Iterable<E> _uniq<E, By>(Iterable<E> i, { By Function(E)? by, bool mutate = false }) {
+  final uniqs = <By>{};
+  final b = by ?? identityCast;
+
+  return [
+    for (final e in i)
+      if (uniqs.add(b(e))) e,
+    ];
 }

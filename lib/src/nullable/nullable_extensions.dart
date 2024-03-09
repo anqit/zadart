@@ -1,4 +1,4 @@
-extension NullableExtensions<E> on E? {
+extension ZadartNullableExtensions<E> on E? {
   B? map<B>(B? Function(E) f) =>
       this != null ? f(this as E) : null;
 

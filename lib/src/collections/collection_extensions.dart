@@ -14,7 +14,18 @@ extension ZadartListExtensions<E> on List<E> {
     final uniqs = <By>{};
     final list = mutate ? this : [ ...this ];
     final b = by ?? identityCast;
+
     return list..retainWhere((e) => uniqs.add(b(e)));
+  }
+
+  List<B> collect<B>(B? Function(E) mapper) {
+    final bs = <B>[];
+
+    for(final e in this) {
+      mapper(e).ifNotNull(bs.add);
+    }
+
+    return bs;
   }
 }
 
@@ -36,7 +47,16 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
       map((k, v) => MapEntry(k, mapper(k, v)));
 
   Map<K, V> operator +(Map<K, V>? other) =>
-      other.map((o) => { ...this, ...o, }) ?? this;
+      other.map((o) => isEmpty ? o : { ...this, ...o, }) ?? this;
+
+  Map<K, V> operator -(Map<K, dynamic>? other) =>
+      other.map((o) => isEmpty ? this :
+          {
+            for (final MapEntry(:key, :value) in entries)
+              if (!o.containsKey(key))
+                key: value
+          }
+      ) ?? this;
 
   Map<K, V> merge(Map<K, V> other, V Function(V, V) merger) =>
       mergeWithKey(other, (_, v1, v2) => merger(v1, v2));
@@ -96,11 +116,14 @@ extension ZadartMapEntryExtensions<K, V> on MapEntry<K, V> {
 }
 
 extension ZadartIterableExtensions<E> on Iterable<E> {
+  bool doesNotContain(Object? value) =>
+    !contains(value);
+
   Map<K, E> toMap<K>(K Function(E) keyMapper) =>
       toMapVm(keyMapper);
 
   // TODO figure out how to not need two toMaps:
-  // how to infer V == E if valueMapper is not provided?
+  // i.e., how to infer V == E if valueMapper is not provided?
   Map<K, V> toMapVm<K, V>(K Function(E) keyMapper, [V Function(E)? valueMapper]) =>
       fold({}, (acc, e) => {
         ...acc,

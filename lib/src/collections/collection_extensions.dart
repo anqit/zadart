@@ -27,6 +27,12 @@ extension ZadartListExtensions<E> on List<E> {
 
     return bs;
   }
+
+  List<E> without(List<E> other) {
+    final oSet = other.toSet();
+
+    return whereNot(oSet.contains).toList();
+  }
 }
 
 extension ZadartDeepEqualityExtensions on DeepCollectionEquality {

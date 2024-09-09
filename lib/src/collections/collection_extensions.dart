@@ -18,15 +18,11 @@ extension ZadartListExtensions<E> on List<E> {
     return list..retainWhere((e) => uniqs.add(b(e)));
   }
 
-  List<B> collect<B>(B? Function(E) mapper) {
-    final bs = <B>[];
-
-    for(final e in this) {
-      mapper(e).ifNotNull(bs.add);
-    }
-
-    return bs;
-  }
+  List<B> collect<B>(B? Function(E) mapper) =>
+      [
+        for (final e in map(mapper))
+          if (e != null) e
+      ];
 
   List<E> without(List<E> other) {
     final oSet = other.toSet();
@@ -53,10 +49,10 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
       map((k, v) => MapEntry(k, mapper(k, v)));
 
   Map<K, V> operator +(Map<K, V>? other) =>
-      other.map((o) => isEmpty ? o : { ...this, ...o, }) ?? this;
+      other.map((o) => isEmpty ? o : o.isEmpty ? this : { ...this, ...o, }) ?? this;
 
   Map<K, V> operator -(Map<K, dynamic>? other) =>
-      other.map((o) => isEmpty ? this :
+      other.map((o) => (isEmpty || o.isEmpty) ? this :
           {
             for (final MapEntry(:key, :value) in entries)
               if (!o.containsKey(key))
@@ -68,6 +64,9 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
       mergeWithKey(other, (_, v1, v2) => merger(v1, v2));
 
   Map<K, V> mergeWithKey(Map<K, V> other, V Function(K, V, V) merger) {
+    if(isEmpty) return other;
+    if(other.isEmpty) return this;
+
     final result = { ...this };
     for(final MapEntry(:key, :value) in other.entries) {
       result.update(key, (v) => merger(key, v, value), ifAbsent: () => value);

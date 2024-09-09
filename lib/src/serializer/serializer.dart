@@ -12,4 +12,9 @@ extension SerializerExtensions<F, T> on Serializer<F, T> {
   Serializer<F2, T> contraMap<F2>(F Function(F2) contraMapper) => (f) => this(contraMapper(f));
 }
 
+extension FromMapSerializerExtensions<E> on Serializer<Map<String, dynamic>, E> {
+  JsonSerializer<E> jsonSerializer() => contraMap((d) => d as Map<String, dynamic>);
+  JsonSerializer<List<E>> jsonListSerializer() => jsonSerializer().forList().contraMap((d) => d as List<dynamic>);
+}
+
 bool jsonBoolSerializer(dynamic j) => jsonDecode(j) as bool;

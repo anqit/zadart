@@ -8,3 +8,4 @@ export 'src/future/future_extensions.dart';
 export 'src/nullable/nullable_extensions.dart';
 export 'src/serializer/serializer.dart';
 export 'src/strings/string_extensions.dart';
+export 'src/comparing/comparing.dart';

@@ -1,5 +1,3 @@
-
-
 class BooleanComparable implements Comparable<bool> {
   final bool thiz;
   final bool trueFirst;
@@ -18,48 +16,35 @@ sealed class Comparing<T> {
   int call(T t1, T t2);
 
   const Comparing();
+  
+  static Comparing<T> fromComparable<T extends Comparable<T>>() =>
+      ComparableComparing();
 
-  factory Comparing.by(dynamic Function(T) selector) => ComparingImpl(selector);
+  static Comparing<T> by<T, F extends Comparable<F>>(F Function(T) selector) =>
+      SelectorComparing(selector);
 
-  Comparing<T> withComparator(Comparator<dynamic> comparator) => switch(this) {
-    ComparingImpl(:final selector) =>
-        ComparatorComparing(selector, comparator),
-    ChainedComparing(:final first, :final second) =>
-        ChainedComparing(first.withComparator(comparator), second.withComparator(comparator)),
-    ReversedComparing(:final wrapped) =>
-        ReversedComparing(wrapped.withComparator(comparator)),
-    ComparatorComparing(:final selector) =>
-        ComparatorComparing(selector, comparator),
-  };
+  static Comparing<T> withComparator<T>(Comparator<T> comparator) =>
+      WithComparatorComparing(comparator);
+  
+  static Comparing<T> withComparatorBy<T, F>(F Function(T) selector, Comparator<F> comparator) =>
+      SelectorWithComparatorComparing(selector, comparator);
+
+  Comparing<T> thenBy<F extends Comparable<F>>(F Function(T) selector, { bool reversed = false }) =>
+      thenComparing(Comparing.by(selector), reversed: reversed);
+
+  Comparing<T> thenWithComparator(Comparator<T> comparator, { bool reversed = false }) =>
+      thenComparing(Comparing.withComparator(comparator), reversed: reversed);
+
+  Comparing<T> thenWithComparatorBy<F>(F Function(T) selector, Comparator<F> comparator, { bool reversed = false }) =>
+      thenComparing(Comparing.withComparatorBy(selector, comparator), reversed: reversed);
 
   Comparing<T> thenComparing(Comparing<T> next, { bool reversed = false }) =>
       reversed ? ChainedComparing(this, next).reversed() : ChainedComparing(this, next);
-
-  Comparing<T> then<F>(F Function(T) selector, { bool reversed = false }) =>
-      thenComparing(Comparing.by(selector), reversed: reversed);
 
   Comparing<T> reversed() => switch (this) {
     ReversedComparing(:final wrapped) => wrapped,
     Comparing<T> c => ReversedComparing(c),
   };
-}
-
-class ComparingImpl<T> extends Comparing<T> {
-  final dynamic Function(T) selector;
-
-  const ComparingImpl(this.selector);
-
-  @override
-  int call(T t1, T t2) {
-    final first = selector(t1);
-    final second = selector(t2);
-
-    return switch (first) {
-      Comparable() => first.compareTo(second),
-      bool() => BooleanComparable.compare(first, second as bool),
-      _ => throw 'comparison not available',
-    };
-  }
 }
 
 class ChainedComparing<T> extends Comparing<T> {
@@ -82,15 +67,37 @@ class ReversedComparing<T> extends Comparing<T> {
   const ReversedComparing(this.wrapped);
 
   @override
-  int call(T t1, T t2) =>
-      wrapped(t2, t1);
+  int call(T t1, T t2) => wrapped(t2, t1);
 }
 
-class ComparatorComparing<T> extends Comparing<T> {
-  final dynamic Function(T) selector;
-  final Comparator<dynamic> comparator;
+class ComparableComparing<T extends Comparable<T>> extends Comparing<T> {
+  @override
+  int call(T t1, T t2) => t1.compareTo(t2);
+}
 
-  const ComparatorComparing(this.selector, this.comparator);
+class SelectorComparing<T, F extends Comparable<F>> extends Comparing<T> {
+  final F Function(T) selector;
+
+  const SelectorComparing(this.selector);
+
+  @override
+  int call(T t1, T t2) => selector(t1).compareTo(selector(t2));
+}
+
+class WithComparatorComparing<T> extends Comparing<T> {
+  final Comparator<T> comparator;
+
+  const WithComparatorComparing(this.comparator);
+
+  @override
+  int call(T t1, T t2) => comparator(t1, t2);
+}
+
+class SelectorWithComparatorComparing<T, F> extends Comparing<T> {
+  final F Function(T) selector;
+  final Comparator<F> comparator;
+
+  const SelectorWithComparatorComparing(this.selector, this.comparator);
 
   @override
   int call(T t1, T t2) => comparator(selector(t1), selector(t2));

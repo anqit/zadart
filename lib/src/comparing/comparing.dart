@@ -9,7 +9,7 @@ class BooleanComparable implements Comparable<bool> {
 
   static int compare(bool first, bool second) =>
       first == second ? 0 : first == true ? -1 : 1;
-  
+
   static Comparator<bool> comparator = compare;
 }
 
@@ -26,8 +26,11 @@ extension ZadartComparatorExtensions<T> on Comparator<T> {
   Comparator<T> thenBy<F extends Comparable<F>>(F Function(T) selector, { bool reversed = false }) =>
       then(reversed ? Comparing.by(selector).reversed() : Comparing.by(selector));
 
-  Comparator<T> thenWithComparatorBy<F>(F Function(T) selector, Comparator<F> comparator, { bool reversed = false }) =>
-      then(reversed ? Comparing.withComparatorBy(selector, comparator).reversed() : Comparing.withComparatorBy(selector, comparator));
+  Comparator<T> thenWithComparatorBy<F>(F Function(T) selector, Comparator<F> comparator) =>
+      then(Comparing.withComparatorBy(selector, comparator));
+
+  Comparator<F> contraMap<F>(T Function(F) map) =>
+      (f1, f2) => this(map(f1), map(f2));
 }
 
 sealed class Comparing {

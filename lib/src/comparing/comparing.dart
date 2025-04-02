@@ -1,18 +1,19 @@
 class BooleanComparable implements Comparable<bool> {
   final bool thiz;
-  final bool trueFirst;
 
-  const BooleanComparable(this.thiz, [ this.trueFirst = true ]);
+  const BooleanComparable(this.thiz);
 
   @override
   int compareTo(bool that) =>
-      compare(thiz, that, trueFirst);
+      compare(thiz, that);
 
-  static int compare(bool first, bool second, [ bool trueFirst = true ]) =>
-      first == second ? 0 : first == trueFirst ? -1 : 1;
+  static int compare(bool first, bool second) =>
+      first == second ? 0 : first == true ? -1 : 1;
+  
+  static Comparator<bool> comparator = compare;
 }
 
-extension <T> on Comparator<T> {
+extension ZadartComparatorExtensions<T> on Comparator<T> {
   Comparator<T> reversed() => (t1, t2) => this(t2, t1);
 
   Comparator<T> then(Comparator<T> next) =>
@@ -29,7 +30,7 @@ extension <T> on Comparator<T> {
       then(reversed ? Comparing.withComparatorBy(selector, comparator).reversed() : Comparing.withComparatorBy(selector, comparator));
 }
 
-sealed class Comparing<T> {
+sealed class Comparing {
   const Comparing();
 
   static Comparator<T> fromComparable<T extends Comparable<T>>() =>

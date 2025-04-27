@@ -49,4 +49,7 @@ sealed class Comparing {
 
   static Comparator<T> withComparatorBy<T, F>(F Function(T) selector, Comparator<F> comparator) =>
       (t1, t2) => comparator(selector(t1), selector(t2));
+
+  static Comparator<T> byBool<T>(bool Function(T) selector) =>
+      withComparatorBy(selector, BooleanComparable.comparator);
 }

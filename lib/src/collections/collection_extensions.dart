@@ -24,11 +24,14 @@ extension ZadartListExtensions<E> on List<E> {
           if (e != null) e
       ];
 
-  List<E> without(List<E> other) {
-    final oSet = other.toSet();
+  List<E> without(Iterable<E>? other) =>
+      other.map((o) {
+        if (isEmpty || o.isEmpty) return this;
+        final oSet = o.toSet();
+        return whereNot(oSet.contains).toList();
+      }) ?? this;
 
-    return whereNot(oSet.contains).toList();
-  }
+  List<E> operator -(Iterable<E>? other) => without(other);
 }
 
 extension ZadartDeepEqualityExtensions on DeepCollectionEquality {

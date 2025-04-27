@@ -26,6 +26,10 @@ extension ZadartComparatorExtensions<T> on Comparator<T> {
   Comparator<T> thenBy<F extends Comparable<F>>(F Function(T) selector, { bool reversed = false }) =>
       then(reversed ? Comparing.by(selector).reversed() : Comparing.by(selector));
 
+  Comparator<T> thenByBool(bool Function(T) selector, { bool reversed = false }) =>
+      then(reversed ? Comparing.withComparatorBy(selector, BooleanComparable.comparator).reversed()
+          : Comparing.withComparatorBy(selector, BooleanComparable.comparator));
+
   Comparator<T> thenWithComparatorBy<F>(F Function(T) selector, Comparator<F> comparator) =>
       then(Comparing.withComparatorBy(selector, comparator));
 

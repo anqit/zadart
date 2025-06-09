@@ -44,8 +44,16 @@ sealed class Comparing {
       (t1, t2) => t1.compareTo(t2);
 
   static Comparator<T> by<T, F extends Comparable<F>>(F Function(T) selector) =>
-      (t1, t2) => selector(t1).compareTo(selector(t2));
+      (t1, t2) => Comparing.fromComparable<F>()(selector(t1), selector(t2));
 
+  static Comparator<T> byNullable<T, F extends Comparable<F>>(F? Function(T) selector) =>
+      (t1, t2) =>
+          switch ((selector(t1), selector(t2))) {
+            (F f1, F f2) => Comparing.fromComparable<F>()(f1, f2),
+            (final _?, null) => -1,
+            (null, final _?) => 1,
+            _ => 0,
+          };
 
   static Comparator<T> withComparatorBy<T, F>(F Function(T) selector, Comparator<F> comparator) =>
       (t1, t2) => comparator(selector(t1), selector(t2));

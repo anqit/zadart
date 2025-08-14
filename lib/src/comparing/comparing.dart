@@ -24,29 +24,29 @@ extension ZadartComparatorExtensions<T> on Comparator<T> {
       };
 
   Comparator<T> thenBy<F extends Comparable<F>>(F Function(T) selector, { bool reversed = false }) =>
-      then(reversed ? Comparing.by(selector).reversed() : Comparing.by(selector));
+      then(reversed ? Comparing<T>().by(selector).reversed() : Comparing<T>().by(selector));
 
   Comparator<T> thenByBool(bool Function(T) selector, { bool reversed = false }) =>
-      then(reversed ? Comparing.withComparatorBy(selector, BooleanComparable.comparator).reversed()
-          : Comparing.withComparatorBy(selector, BooleanComparable.comparator));
+      then(reversed ? Comparing<T>().byBool(selector).reversed()
+          : Comparing<T>().byBool(selector));
 
   Comparator<T> thenWithComparatorBy<F>(F Function(T) selector, Comparator<F> comparator) =>
-      then(Comparing.withComparatorBy(selector, comparator));
+      then(Comparing<T>().withComparatorBy(selector, comparator));
 
   Comparator<F> contraMap<F>(T Function(F) map) =>
       (f1, f2) => this(map(f1), map(f2));
 }
 
-sealed class Comparing {
+class Comparing<T> {
   const Comparing();
 
   static Comparator<T> fromComparable<T extends Comparable<T>>() =>
       (t1, t2) => t1.compareTo(t2);
 
-  static Comparator<T> by<T, F extends Comparable<F>>(F Function(T) selector) =>
+  Comparator<T> by<F extends Comparable<F>>(F Function(T) selector) =>
       (t1, t2) => Comparing.fromComparable<F>()(selector(t1), selector(t2));
 
-  static Comparator<T> byNullable<T, F extends Comparable<F>>(F? Function(T) selector) =>
+  Comparator<T> byNullable<F extends Comparable<F>>(F? Function(T) selector) =>
       (t1, t2) =>
           switch ((selector(t1), selector(t2))) {
             (F f1, F f2) => Comparing.fromComparable<F>()(f1, f2),
@@ -55,9 +55,9 @@ sealed class Comparing {
             _ => 0,
           };
 
-  static Comparator<T> withComparatorBy<T, F>(F Function(T) selector, Comparator<F> comparator) =>
+  Comparator<T> withComparatorBy<F>(F Function(T) selector, Comparator<F> comparator) =>
       (t1, t2) => comparator(selector(t1), selector(t2));
 
-  static Comparator<T> byBool<T>(bool Function(T) selector) =>
+  Comparator<T> byBool(bool Function(T) selector) =>
       withComparatorBy(selector, BooleanComparable.comparator);
 }

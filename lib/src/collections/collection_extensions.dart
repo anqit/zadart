@@ -6,7 +6,7 @@ const _dce = DeepCollectionEquality();
 
 // extensions on lists
 extension ZadartListExtensions<E> on List<E> {
-  /// Returns a new list consisting of the unique elements in this list, in first-encounter order
+  /// Returns a list consisting of the unique elements in this list, in first-encounter order
   /// The [by] parameter can be used to provide a function to determine what to examine when determining
   /// uniqueness, otherwise standard equality is used.
   /// By default, this will return a new list, but [mutate] can be used change the list in place instead
@@ -146,6 +146,9 @@ extension ZadartIterableExtensions<E> on Iterable<E> {
 
   Iterable<E> unique<By>({ By Function(E)? by, bool mutate = false }) =>
       by.inverse(this).filter((s) => s is Set) ?? _uniq(this, by: by, mutate: mutate);
+
+  Iterable<B> collect<B>(B? Function(E) mapper) =>
+    map(mapper).where((b) => b.isNotNull).map((b) => b!);
 }
 
 Iterable<E> _uniq<E, By>(Iterable<E> i, { By Function(E)? by, bool mutate = false }) {

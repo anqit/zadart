@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:zadart/src/functions/function_utils.dart';
 
 extension ZadartNullableExtensions<E> on E? {
@@ -13,15 +15,16 @@ extension ZadartNullableExtensions<E> on E? {
         _ => orElse.map((oe) {oe(); return null;}),
       };
 
-  Future<E?> asyncIfNotNull(Future<void> Function(E) f, { Future<void> Function()? orElse }) async {
-    if (this != null) {
-      await f(this as E);
-      return this;
-    } else {
-      if (orElse != null) await orElse();
-      return null;
+  Future<void> asyncIfNotNull(Future<void> Function(E) f, { Future<void> Function()? orElse }) async {
+    if (this case E e) {
+      await f(e);
+    } else if (orElse case final orElse?) {
+      await orElse();
     }
   }
+
+  void ifNull(void Function() f) =>
+      isNull ? f() : null;
 
   B? inverse<B>(B? ifNull) =>
       this == null ? ifNull : null;
@@ -37,5 +40,5 @@ extension ZadartNullableExtensions<E> on E? {
 
   bool get isNull => this == null;
 
-  bool get isNotNull => this != null;
+  bool get isNotNull => !isNull;
 }

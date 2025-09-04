@@ -1,42 +1,32 @@
 import 'dart:async';
 
-import 'package:zadart/src/functions/function_utils.dart';
-
 extension ZadartNullableExtensions<E> on E? {
   B? map<B>(B? Function(E) f) =>
-      this != null ? f(this as E) : null;
+      isNotNull ? f(this as E) : null;
 
   Future<B?> asyncMap<B>(Future<B?> Function(E) f) async =>
-      this != null ? await f(this as E) : null;
+      isNotNull ? await f(this as E) : null;
 
-  E? ifNotNull(void Function(E) f, { void Function()? orElse }) =>
-      switch (this) {
-        E e => e.tap(f),
-        _ => orElse.map((oe) {oe(); return null;}),
-      };
+  void ifNotNull(void Function(E) f, { void Function()? orElse }) =>
+      isNotNull ? f(this as E) : orElse?.call();
 
-  Future<void> asyncIfNotNull(Future<void> Function(E) f, { Future<void> Function()? orElse }) async {
-    if (this case E e) {
-      await f(e);
-    } else if (orElse case final orElse?) {
-      await orElse();
-    }
-  }
+  Future<void> asyncIfNotNull(Future<void> Function(E) f, { Future<void> Function()? orElse }) async =>
+      isNotNull ? await f(this as E) : orElse?.call();
 
-  void ifNull(void Function() f) =>
-      isNull ? f() : null;
+  Future<void> asyncIfNull(Future<void> Function() f) async =>
+      isNull ? await f() : null;
 
-  B? inverse<B>(B? ifNull) =>
-      this == null ? ifNull : null;
+  B? ifNull<B>(B? ifNull) =>
+      isNull ? ifNull : null;
 
-  B? lazyInverse<B>(B? Function() ifNull) =>
-      this == null ? ifNull() : null;
+  B? lazyIfNull<B>(B? Function() ifNull) =>
+      isNull ? ifNull() : null;
 
   E? filter(bool Function(E) p) =>
-      this != null && p(this as E) ? this : null;
+      isNotNull && p(this as E) ? this : null;
 
   Future<E?> asyncFilter(Future<bool> Function(E) p) async =>
-      this != null && await p(this as E) ? this : null;
+      isNotNull && await p(this as E) ? this : null;
 
   bool get isNull => this == null;
 

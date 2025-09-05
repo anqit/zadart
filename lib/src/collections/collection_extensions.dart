@@ -145,7 +145,7 @@ extension ZadartIterableExtensions<E> on Iterable<E> {
       _dce.unequal(this, other);
 
   Iterable<E> unique<By>({ By Function(E)? by, bool mutate = false }) =>
-      by.inverse(this).filter((s) => s is Set) ?? _uniq(this, by: by, mutate: mutate);
+      by.ifNull(this).filter((s) => s is Set) ?? _uniq(this, by: by, mutate: mutate);
 
   Iterable<B> collect<B>(B? Function(E) mapper) =>
     map(mapper).where((b) => b.isNotNull).map((b) => b!);

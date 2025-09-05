@@ -13,14 +13,14 @@ extension ZadartNullableExtensions<E> on E? {
   Future<void> asyncIfNotNull(Future<void> Function(E) f, { Future<void> Function()? orElse }) async =>
       isNotNull ? await f(this as E) : orElse?.call();
 
-  Future<void> asyncIfNull(Future<void> Function() f) async =>
-      isNull ? await f() : null;
-
   B? ifNull<B>(B? ifNull) =>
       isNull ? ifNull : null;
 
-  B? lazyIfNull<B>(B? Function() ifNull) =>
+  B? ifNullGet<B>(B? Function() ifNull) =>
       isNull ? ifNull() : null;
+
+  Future<void> asyncIfNull(Future<void> Function() f) async =>
+      isNull ? await f() : null;
 
   E? filter(bool Function(E) p) =>
       isNotNull && p(this as E) ? this : null;

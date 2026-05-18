@@ -117,6 +117,11 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
   Map<K, V> whereNot(bool Function(K, V) predicate) =>
       where((k, v) => !predicate(k, v));
 
+  Map<K, V> updated(K key, V value) => {
+    ...this,
+    key: value,
+  };
+
   Map<K, V> without(K key) =>
       whereNot((k, _) => k == key);
 }

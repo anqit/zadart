@@ -123,7 +123,7 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
   };
 
   Map<K, V> without(K key) =>
-      whereNot((k, _) => k == key);
+      containsKey(key) ? whereNot((k, _) => k == key) : this;
 }
 
 extension ZadartMapEntryExtensions<K, V> on MapEntry<K, V> {

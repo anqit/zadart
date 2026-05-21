@@ -117,13 +117,21 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
   Map<K, V> whereNot(bool Function(K, V) predicate) =>
       where((k, v) => !predicate(k, v));
 
-  Map<K, V> updated(K key, V value) => {
-    ...this,
-    key: value,
-  };
+  Map<K, V> updated(K key, V value, { bool forceValueIdentity = false }) {
+    if (containsKey(key)) {
+      final curr = this[key];
+      final bool valueEquals = forceValueIdentity ? identical(curr, value) : curr == value;
+      if (valueEquals) {
+        return this;
+      }
+    }
+    return { ...this, key: value, };
+  }
 
   Map<K, V> without(K key) =>
-      containsKey(key) ? whereNot((k, _) => k == key) : this;
+      containsKey(key)
+          ? ({ ...this }..remove(key))
+          : this;
 }
 
 extension ZadartMapEntryExtensions<K, V> on MapEntry<K, V> {

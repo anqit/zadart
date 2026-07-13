@@ -21,7 +21,7 @@ extension ZadartListExtensions<E> on List<E> {
   List<B> collect<B>(B? Function(E) mapper) =>
       [
         for (final e in map(mapper))
-          if (e != null) e
+          ?e
       ];
 
   List<E> without(Iterable<E>? other) =>

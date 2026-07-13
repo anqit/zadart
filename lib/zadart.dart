@@ -1,6 +1,6 @@
 /// A collection of various dart utilities
 
-library zadart;
+library;
 
 export 'src/collections/collection_extensions.dart';
 export 'src/functions/function_utils.dart';

@@ -3,6 +3,7 @@
 library;
 
 export 'src/collections/collection_extensions.dart';
+export 'src/collections/trie.dart';
 export 'src/functions/function_utils.dart';
 export 'src/future/future_extensions.dart';
 export 'src/nullable/nullable_extensions.dart';

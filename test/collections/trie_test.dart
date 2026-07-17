@@ -93,28 +93,32 @@ void main() {
       expect(trie.get(['a', 'c']), 2);
     });
 
-    test('foldUp folds children before parents', () {
+    test('foldUp folds children before their parents (post-order)', () {
       final builder = TrieBuilder<String, int>()
         ..insert(['a', 'b'], 1)
         ..insert(['a', 'c'], 2);
-      // Count every node (root + a + b + c).
-      final nodeCount = builder.foldUp<int>(
-        (node, children) => 1 + children.values.fold(0, (a, b) => a + b),
-      );
-      expect(nodeCount, 4);
+      final order = <String>[];
+      builder.foldUp<int>((node, children) {
+        // Label each node by its child keys; leaves have none.
+        order.add(children.isEmpty ? 'leaf(${node.value})' : children.keys.join('+'));
+        return 1 + children.values.fold(0, (a, b) => a + b);
+      });
+      // Leaves b and c fold first, then their parent a, then the root.
+      expect(order, ['leaf(1)', 'leaf(2)', 'b+c', 'a']);
     });
 
-    test('foldDown visits the root then descends', () {
+    test('foldDown threads the accumulator through nodes in pre-order', () {
       final builder = TrieBuilder<String, int>()
         ..insert(['a', 'b'], 1)
         ..insert(['a', 'c'], 2);
-      final visited = <String?>[];
-      builder.foldDown<int>(0, (depth, key, node) {
-        visited.add(key);
-        return depth + 1;
-      });
-      expect(visited.first, isNull); // root is visited first with a null key
-      expect(visited, containsAll(['a', 'b', 'c']));
+      // The returned accumulator is threaded through every node; record each
+      // key in the order it is visited.
+      final order = builder.foldDown<List<String?>>(
+        <String?>[],
+        (acc, key, node) => [...acc, key],
+      );
+      // Root first (null key), then depth-first into a and its children.
+      expect(order, [null, 'a', 'b', 'c']);
     });
   });
 }

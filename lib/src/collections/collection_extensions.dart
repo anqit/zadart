@@ -13,7 +13,7 @@ extension ZadartListExtensions<E> on List<E> {
   List<E> unique<By>({ By Function(E)? by, bool mutate = false }) {
     final uniqs = <By>{};
     final list = mutate ? this : [ ...this ];
-    final b = by ?? identityCast;
+    final b = by ?? cast;
 
     return list..retainWhere((e) => uniqs.add(b(e)));
   }
@@ -102,10 +102,11 @@ extension ZadartMapExtensions<K, V> on Map<K, V> {
   Map<K, R> mergeMapWithDefaults<V2, R>(Map<K, V2> other, R Function(V, V2) merger, R Function(V) ifAbsentInOther, R Function(V2) ifAbsentInThis) =>
       {
         for (final k in keys.followedBy(other.keys).toSet())
-          k: containsKey(k) ?
-          (other.containsKey(k) ?
-          merger(this[k] as V, other[k] as V2) : ifAbsentInOther(this[k] as V)
-          ) : ifAbsentInThis(other[k] as V2)
+          k: containsKey(k)
+              ? other.containsKey(k)
+                  ? merger(this[k] as V, other[k] as V2)
+                  : ifAbsentInOther(this[k] as V)
+              : ifAbsentInThis(other[k] as V2)
       };
 
   Map<K, V> where(bool Function(K, V) predicate) => {
@@ -151,7 +152,7 @@ extension ZadartIterableExtensions<E> on Iterable<E> {
   Map<K, V> toMapVm<K, V>(K Function(E) keyMapper, [V Function(E)? valueMapper]) =>
       fold({}, (acc, e) => {
         ...acc,
-        keyMapper(e): (valueMapper ?? identityCast)(e)
+        keyMapper(e): (valueMapper ?? cast)(e)
       });
 
   bool deepEquals(Object? other) =>
@@ -169,7 +170,7 @@ extension ZadartIterableExtensions<E> on Iterable<E> {
 
 Iterable<E> _uniq<E, By>(Iterable<E> i, { By Function(E)? by, bool mutate = false }) {
   final uniqs = <By>{};
-  final b = by ?? identityCast;
+  final b = by ?? cast;
 
   return [
     for (final e in i)

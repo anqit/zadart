@@ -1,7 +1,9 @@
 name: zadart
-description: A starting point for Dart libraries or applications.
-version: 0.0.5
-# repository: https://github.com/my_org/my_repo
+description: >-
+  A collection of general-purpose utility functions and extensions for
+  everyday Dart programming.
+version: 0.1.0
+repository: https://github.com/anqit/zadart
 
 environment:
   sdk: ^3.12.0

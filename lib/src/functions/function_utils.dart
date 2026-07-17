@@ -4,7 +4,7 @@ void noop1(_) {}
 
 E identity<E>(E e) => e;
 
-By identityCast<By, E>(E e) => e as By;
+To cast<To, From>(From e) => e as To;
 
 extension FunctionalExtensions<E> on E {
   E tap(void Function(E) f) {

@@ -89,18 +89,18 @@ void main() {
     });
   });
 
-  group('ifNull / ifNullGet', () {
-    test('produce a fallback only for null', () {
+  group('whenNull / whenNullGet', () {
+    test('produce a value only for null', () {
       const String? missing = null;
       String? present = 'here';
-      expect(missing.ifNull('fallback'), 'fallback');
-      expect(present.ifNull('fallback'), isNull);
-      expect(missing.ifNullGet(() => 'lazy'), 'lazy');
+      expect(missing.whenNull('fallback'), 'fallback');
+      expect(present.whenNull('fallback'), isNull);
+      expect(missing.whenNullGet(() => 'lazy'), 'lazy');
     });
 
-    test('ifNullGet does not evaluate for a non-null value', () {
+    test('whenNullGet does not evaluate for a non-null value', () {
       String? present = 'here';
-      expect(present.ifNullGet(() => fail('should not run')), isNull);
+      expect(present.whenNullGet(() => fail('should not run')), isNull);
     });
   });
 }

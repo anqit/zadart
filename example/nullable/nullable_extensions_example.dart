@@ -21,9 +21,10 @@ Future<void> main() async {
   // receiver — the predicate is never called and you simply get null back.
   print(missing.filter((s) => throw StateError('never runs'))); // null
 
-  // `ifNull` / `ifNullGet` produce a fallback only when the value is null.
-  print(missing.ifNull('default')); // default
-  print(name.ifNull('default')); // null  (name was non-null)
+  // `whenNull` produces a value only when the receiver is null (and null
+  // otherwise — it is the null-side counterpart to `map`, not `??`).
+  print(missing.whenNull('default')); // default
+  print(name.whenNull('default')); // null  (name was non-null)
 
   // `isNull` / `isNotNull` read more clearly than `== null`.
   print(name.isNotNull); // true

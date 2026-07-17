@@ -243,14 +243,14 @@ void main() {
     });
   });
 
-  group('Iterable.toMap / toMapVm', () {
+  group('Iterable.toMap / toMapWithValues', () {
     test('keys elements by a selector, later entries winning', () {
       expect(['apple', 'avocado', 'banana'].toMap((w) => w[0]),
           {'a': 'avocado', 'b': 'banana'});
     });
 
-    test('toMapVm supports a separate value mapper', () {
-      expect([1, 2, 3].toMapVm((n) => n, (n) => n * n), {1: 1, 2: 4, 3: 9});
+    test('toMapWithValues supports a separate value mapper', () {
+      expect([1, 2, 3].toMapWithValues((n) => n, (n) => n * n), {1: 1, 2: 4, 3: 9});
     });
   });
 

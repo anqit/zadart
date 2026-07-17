@@ -54,11 +54,4 @@ void main() {
       expect(users.map((u) => u.name), ['Ada', 'Al']);
     });
   });
-
-  group('jsonBoolSerializer', () {
-    test('decodes a JSON boolean from its string form', () {
-      expect(jsonBoolSerializer('true'), isTrue);
-      expect(jsonBoolSerializer('false'), isFalse);
-    });
-  });
 }

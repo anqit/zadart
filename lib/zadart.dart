@@ -2,6 +2,7 @@
 
 library;
 
+export 'src/adt/union.dart';
 export 'src/collections/collection_extensions.dart';
 export 'src/collections/trie.dart';
 export 'src/functions/function_utils.dart';
